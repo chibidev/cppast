@@ -227,19 +227,12 @@ libclang_compile_config::libclang_compile_config(const libclang_compilation_data
     {
         auto cmd = clang_CompileCommands_getCommand(commands.get(), i);
         auto dir = detail::cxstring(clang_CompileCommand_getDirectory(cmd));
-        parse_flags(cmd, [&](std::string flag, std::string args) {
-            if (flag == "-I")
-                add_flag(std::move(flag) + get_full_path(dir, args));
-            else if (flag == "-D" || flag == "-U")
-                // preprocessor options
-                add_flag(std::move(flag) + std::move(args));
-            else if (flag == "-std")
-                // standard
-                add_flag(std::move(flag) + "=" + std::move(args));
-            else if (flag == "-f" && (args == "ms-compatibility" || args == "ms-extensions"))
-                // other options
-                add_flag(std::move(flag) + std::move(args));
-        });
+        auto&& no_args = clang_CompileCommand_getNumArgs(cmd);
+        for (auto&& i = 1u /* 0 is compiler executable */; i != no_args; ++i)
+        {
+            detail::cxstring str(clang_CompileCommand_getArg(cmd, i));
+            add_flag(str.std_str());
+        }
     }
 }
 
