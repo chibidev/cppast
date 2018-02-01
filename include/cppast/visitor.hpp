@@ -123,7 +123,7 @@ namespace cppast
     template <typename Func>
     void visit(const cpp_entity& e, Func f)
     {
-        detail::visit(e, detail::get_visitor_callback<Func>(), &f, cpp_public, false);
+        detail::visit(e, detail::get_visitor_callback<Func>(), &f, cpp_access_specifier_kind::cpp_public, false);
     }
 
     /// The result of a visitor filter operation.

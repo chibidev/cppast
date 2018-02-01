@@ -95,6 +95,7 @@ std::unique_ptr<cpp_entity> detail::parse_cpp_member_variable(const detail::pars
     auto name       = get_cursor_name(cur);
     auto type       = parse_type(context, cur, clang_getCursorType(cur));
     auto is_mutable = clang_CXXField_isMutable(cur) != 0u;
+    auto access_specifier = detail::convert_access(cur);
 
     cpp_attribute_list attributes;
     auto               default_value = parse_default_value(attributes, context, cur, name.c_str());
@@ -105,15 +106,15 @@ std::unique_ptr<cpp_entity> detail::parse_cpp_member_variable(const detail::pars
         auto no_bits = clang_getFieldDeclBitWidth(cur);
         DEBUG_ASSERT(no_bits >= 0, detail::parse_error_handler{}, cur, "invalid number of bits");
         if (name.empty())
-            result = cpp_bitfield::build(std::move(type), unsigned(no_bits), is_mutable);
+            result = cpp_bitfield::build(std::move(type), unsigned(no_bits), access_specifier, is_mutable);
         else
             result = cpp_bitfield::build(*context.idx, get_entity_id(cur), name.c_str(),
-                                         std::move(type), unsigned(no_bits), is_mutable);
+                                         std::move(type), unsigned(no_bits), access_specifier, is_mutable);
     }
     else
     {
         result = cpp_member_variable::build(*context.idx, get_entity_id(cur), name.c_str(),
-                                            std::move(type), std::move(default_value), is_mutable);
+                                            std::move(type), std::move(default_value), access_specifier, is_mutable);
     }
     result->add_attribute(attributes);
     context.comments.match(*result, cur);

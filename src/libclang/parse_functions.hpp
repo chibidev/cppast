@@ -5,6 +5,7 @@
 #ifndef CPPAST_PARSE_FUNCTIONS_HPP_INCLUDED
 #define CPPAST_PARSE_FUNCTIONS_HPP_INCLUDED
 
+#include <cppast/cpp_access_specifier.hpp>
 #include <cppast/cpp_entity.hpp>
 #include <cppast/parser.hpp>
 
@@ -167,6 +168,8 @@ namespace cppast
         std::unique_ptr<cpp_entity> parse_entity(
             const parse_context& context, cpp_entity* parent, const CXCursor& cur,
             const CXCursor& parent_cur = clang_getNullCursor());
+
+        cpp_access_specifier_kind convert_access(const CXCursor& cur);
     }
 } // namespace cppast::detail
 

@@ -60,36 +60,17 @@ namespace
         return result;
     }
 
-    cpp_access_specifier_kind convert_access(const CXCursor& cur)
-    {
-        switch (clang_getCXXAccessSpecifier(cur))
-        {
-        case CX_CXXInvalidAccessSpecifier:
-            break;
-
-        case CX_CXXPublic:
-            return cpp_public;
-        case CX_CXXProtected:
-            return cpp_protected;
-        case CX_CXXPrivate:
-            return cpp_private;
-        }
-
-        DEBUG_UNREACHABLE(detail::assert_handler{});
-        return cpp_public;
-    }
-
     void add_access_specifier(cpp_class::builder& builder, const CXCursor& cur)
     {
         DEBUG_ASSERT(cur.kind == CXCursor_CXXAccessSpecifier, detail::assert_handler{});
-        builder.access_specifier(convert_access(cur));
+        builder.access_specifier(detail::convert_access(cur));
     }
 
     void add_base_class(cpp_class::builder& builder, const detail::parse_context& context,
                         const CXCursor& cur, const CXCursor& class_cur)
     {
         DEBUG_ASSERT(cur.kind == CXCursor_CXXBaseSpecifier, detail::assert_handler{});
-        auto access     = convert_access(cur);
+        auto access     = detail::convert_access(cur);
         auto is_virtual = clang_isVirtualBase(cur) != 0u;
 
         detail::cxtokenizer    tokenizer(context.tu, context.file, cur);

@@ -287,3 +287,23 @@ std::unique_ptr<cpp_entity> detail::parse_cpp_static_assert(const detail::parse_
     context.comments.match(*result, cur);
     return std::move(result);
 }
+
+cpp_access_specifier_kind detail::convert_access(const CXCursor& cur)
+{
+    switch (clang_getCXXAccessSpecifier(cur))
+    {
+        case CX_CXXInvalidAccessSpecifier:
+            break;
+
+        case CX_CXXPublic:
+            return cpp_access_specifier_kind::cpp_public;
+        case CX_CXXProtected:
+            return cpp_access_specifier_kind::cpp_protected;
+        case CX_CXXPrivate:
+            return cpp_access_specifier_kind::cpp_private;
+    }
+
+    DEBUG_UNREACHABLE(detail::assert_handler{});
+    return cpp_access_specifier_kind::cpp_public;
+}
+

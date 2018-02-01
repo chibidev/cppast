@@ -15,7 +15,7 @@
 
 namespace cppast
 {
-    enum cpp_access_specifier_kind : int;
+    enum class cpp_access_specifier_kind : int;
 
     /// A simple string view implementation, like [std::string_view]().
     ///

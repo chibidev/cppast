@@ -22,9 +22,9 @@ namespace
     {
         if (e.kind() == cpp_class::kind())
             return static_cast<const cpp_class&>(e).class_kind() == cpp_class_kind::class_t ?
-                       cpp_private :
-                       cpp_public;
-        return cpp_public;
+                       cpp_access_specifier_kind::cpp_private :
+                       cpp_access_specifier_kind::cpp_public;
+        return cpp_access_specifier_kind::cpp_public;
     }
 
     void update_access(cpp_access_specifier_kind& child_access, const cpp_entity& child)

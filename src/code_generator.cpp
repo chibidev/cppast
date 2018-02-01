@@ -331,11 +331,11 @@ namespace
                 output << keyword("virtual") << whitespace;
 
             auto access = base.access_specifier();
-            if (access == cpp_protected)
+            if (access == cpp_access_specifier_kind::cpp_protected)
                 output << keyword("protected") << whitespace;
-            else if (access == cpp_private && parent_kind != cpp_class_kind::class_t)
+            else if (access == cpp_access_specifier_kind::cpp_private && parent_kind != cpp_class_kind::class_t)
                 output << keyword("private") << whitespace;
-            else if (access == cpp_public && parent_kind == cpp_class_kind::class_t)
+            else if (access == cpp_access_specifier_kind::cpp_public && parent_kind == cpp_class_kind::class_t)
                 output << keyword("public") << whitespace;
 
             output << identifier(base.name());
@@ -370,7 +370,7 @@ namespace
             }
             else if (need_sep)
                 output << comma;
-            need_sep = generate_base_class(generator, base, cpp_public);
+            need_sep = generate_base_class(generator, base, cpp_access_specifier_kind::cpp_public);
         }
     }
 
@@ -407,7 +407,7 @@ namespace
 
                 auto need_sep = false;
                 auto last_access =
-                    c.class_kind() == cpp_class_kind::class_t ? cpp_private : cpp_public;
+                c.class_kind() == cpp_class_kind::class_t ? cpp_access_specifier_kind::cpp_private : cpp_access_specifier_kind::cpp_public;
                 auto last_written_access = last_access;
                 for (auto& member : c)
                 {
@@ -522,7 +522,7 @@ namespace
     void write_function_parameters(code_generator::output& output, const cpp_function_base& base)
     {
         output << punctuation("(") << bracket_ws;
-        auto need_sep = write_container(output, base.parameters(), comma, cpp_public);
+        auto need_sep = write_container(output, base.parameters(), comma, cpp_access_specifier_kind::cpp_public);
         if (base.is_variadic())
         {
             if (need_sep)
@@ -925,7 +925,7 @@ namespace
         auto need_header = hide_if_empty;
         for (auto& param : templ.parameters())
         {
-            auto is_excluded = output.options(param, cpp_public).is_set(code_generator::exclude);
+            auto is_excluded = output.options(param, cpp_access_specifier_kind::cpp_public).is_set(code_generator::exclude);
             if (!is_excluded)
             {
                 if (need_header)
@@ -935,7 +935,7 @@ namespace
                 }
                 else if (need_sep)
                     output << comma;
-                need_sep = generate_code_impl(*output.generator(), param, cpp_public);
+                need_sep = generate_code_impl(*output.generator(), param, cpp_access_specifier_kind::cpp_public);
             }
         }
 
@@ -1120,13 +1120,13 @@ namespace
 
 bool code_generator::generate_code(const cpp_entity& entity)
 {
-    return generate_code_impl(*this, entity, cpp_public);
+    return generate_code_impl(*this, entity, cpp_access_specifier_kind::cpp_public);
 }
 
 bool cppast::generate_code(code_generator& generator, const cpp_entity& e)
 {
     generator.main_entity_ = type_safe::ref(e);
-    auto result            = generate_code_impl(generator, e, cpp_public);
+    auto result            = generate_code_impl(generator, e, cpp_access_specifier_kind::cpp_public);
     generator.main_entity_ = nullptr;
     return result;
 }

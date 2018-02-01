@@ -7,6 +7,7 @@
 
 #include <type_safe/flag_set.hpp>
 
+#include <cppast/cpp_access_specifier.hpp>
 #include <cppast/cpp_function.hpp>
 
 namespace cppast
@@ -108,9 +109,9 @@ namespace cppast
         {
         public:
             /// \effects Sets the name and return type.
-            basic_member_builder(std::string name, std::unique_ptr<cpp_type> return_type)
+            basic_member_builder(std::string name, std::unique_ptr<cpp_type> return_type, cpp_access_specifier_kind access)
             {
-                this->function = std::unique_ptr<T>(new T(std::move(name), std::move(return_type)));
+                this->function = std::unique_ptr<T>(new T(std::move(name), std::move(return_type), access));
             }
 
             /// \effects Sets the cv- and ref-qualifier.
@@ -138,8 +139,9 @@ namespace cppast
         };
 
         /// \effects Sets name and return type, as well as the rest to defaults.
-        cpp_member_function_base(std::string name, std::unique_ptr<cpp_type> return_type)
-        : cpp_function_base(std::move(name)),
+        cpp_member_function_base(std::string name, std::unique_ptr<cpp_type> return_type,
+                                 cpp_access_specifier_kind access)
+        : cpp_function_base(std::move(name), access),
           return_type_(std::move(return_type)),
           cv_(cpp_cv_none),
           ref_(cpp_ref_none),
@@ -156,6 +158,7 @@ namespace cppast
         cpp_cv                    cv_;
         cpp_reference             ref_;
         bool                      constexpr_;
+        cpp_access_specifier_kind access_specifier_;
     };
 
     /// A [cppast::cpp_entity]() modelling a member function.
@@ -210,8 +213,8 @@ namespace cppast
         }
 
     private:
-        cpp_conversion_op(std::string name, std::unique_ptr<cpp_type> return_t)
-        : cpp_member_function_base(std::move(name), std::move(return_t)), explicit_(false)
+        cpp_conversion_op(std::string name, std::unique_ptr<cpp_type> return_t, cpp_access_specifier_kind access)
+        : cpp_member_function_base(std::move(name), std::move(return_t), access), explicit_(false)
         {
         }
 
@@ -260,8 +263,8 @@ namespace cppast
         }
 
     private:
-        cpp_constructor(std::string name)
-        : cpp_function_base(std::move(name)), explicit_(false), constexpr_(false)
+        cpp_constructor(std::string name, cpp_access_specifier_kind access)
+        : cpp_function_base(std::move(name), access), explicit_(false), constexpr_(false)
         {
         }
 
@@ -269,6 +272,7 @@ namespace cppast
 
         bool explicit_;
         bool constexpr_;
+        cpp_access_specifier_kind access_specifier_;
 
         friend basic_builder<cpp_constructor>;
     };
@@ -309,7 +313,7 @@ namespace cppast
         }
 
     private:
-        cpp_destructor(std::string name) : cpp_function_base(std::move(name))
+        cpp_destructor(std::string name, cpp_access_specifier_kind access) : cpp_function_base(std::move(name), access)
         {
         }
 

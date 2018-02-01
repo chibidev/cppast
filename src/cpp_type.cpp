@@ -610,7 +610,7 @@ std::string cppast::to_string(const cpp_type& type)
     // just a dummy type for the output
     static auto dummy_entity = cpp_type_alias::build("foo", cpp_builtin_type::build(cpp_int));
     to_string_generator::output output(type_safe::ref(generator), type_safe::ref(*dummy_entity),
-                                       cpp_public);
+                                       cpp_access_specifier_kind::cpp_public);
     write_type(output, type, "");
     return generator.get();
 }

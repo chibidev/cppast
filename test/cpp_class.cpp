@@ -164,7 +164,7 @@ struct g
                     REQUIRE(child.name() == "public");
                     REQUIRE(child.kind() == cpp_entity_kind::access_specifier_t);
                     REQUIRE(static_cast<const cpp_access_specifier&>(child).access_specifier()
-                            == cpp_public);
+                            == cpp_access_specifier_kind::cpp_public);
                     break;
                 case 2:
                     REQUIRE(child.name() == "m2");
@@ -249,7 +249,7 @@ struct g
                 ++no_bases;
                 if (base.name() == "ns::base")
                 {
-                    REQUIRE(base.access_specifier() == cpp_public);
+                    REQUIRE(base.access_specifier() == cpp_access_specifier_kind::cpp_public);
                     REQUIRE(!base.is_virtual());
 
                     REQUIRE(equal_types(idx, base.type(),
@@ -284,7 +284,7 @@ struct g
                 ++no_bases;
                 if (base.name() == "base")
                 {
-                    REQUIRE(base.access_specifier() == cpp_public);
+                    REQUIRE(base.access_specifier() == cpp_access_specifier_kind::cpp_public);
                     REQUIRE(!base.is_virtual());
 
                     REQUIRE(equal_types(idx, base.type(),

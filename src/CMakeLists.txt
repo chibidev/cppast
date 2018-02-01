@@ -8,6 +8,7 @@ set(detail_header
 set(header
     ../include/cppast/code_generator.hpp
     ../include/cppast/compile_config.hpp
+    ../include/cppast/cpp_access_specifier.hpp
     ../include/cppast/cpp_alias_template.hpp
     ../include/cppast/cpp_array_type.hpp
     ../include/cppast/cpp_attribute.hpp
@@ -50,6 +51,7 @@ set(header
     ../include/cppast/visitor.hpp)
 set(source
         code_generator.cpp
+        cpp_access_specifier.cpp
         cpp_alias_template.cpp
         cpp_attribute.cpp
         cpp_class.cpp
