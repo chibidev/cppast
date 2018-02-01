@@ -141,7 +141,7 @@ extern template class a<int>;
                 {
                     ++no;
 
-                    REQUIRE(base.access_specifier() == cpp_public);
+                    REQUIRE(base.access_specifier() == cpp_access_specifier_kind::cpp_public);
                     REQUIRE(!base.is_virtual());
 
                     if (base.name() == "T")

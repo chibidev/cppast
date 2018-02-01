@@ -519,7 +519,8 @@ namespace
 
         cpp_function::builder builder(name.c_str(),
                                       detail::parse_type(context, cur,
-                                                         clang_getCursorResultType(cur)));
+                                                         clang_getCursorResultType(cur)),
+                                      detail::convert_access(cur));
         context.comments.match(builder.get(), cur);
         builder.get().add_attribute(prefix.attributes);
 
@@ -674,7 +675,8 @@ std::unique_ptr<cpp_entity> detail::parse_cpp_member_function(const detail::pars
 
     cpp_member_function::builder builder(name.c_str(),
                                          detail::parse_type(context, cur,
-                                                            clang_getCursorResultType(cur)));
+                                                            clang_getCursorResultType(cur)),
+                                         detail::convert_access(cur));
     context.comments.match(builder.get(), cur);
     builder.get().add_attribute(prefix.attributes);
     add_parameters(context, builder, cur);
@@ -740,7 +742,8 @@ std::unique_ptr<cpp_entity> detail::parse_cpp_conversion_op(const detail::parse_
 
     auto                       type = clang_getCursorResultType(cur);
     cpp_conversion_op::builder builder("operator " + type_spelling,
-                                       detail::parse_type(context, cur, type));
+                                       detail::parse_type(context, cur, type),
+                                       detail::convert_access(cur));
     context.comments.match(builder.get(), cur);
     builder.get().add_attribute(prefix.attributes);
     if (prefix.is_explicit)
@@ -770,7 +773,7 @@ std::unique_ptr<cpp_entity> detail::parse_cpp_constructor(const detail::parse_co
     DEBUG_ASSERT(!prefix.is_virtual, detail::parse_error_handler{}, cur,
                  "constructor cannot be virtual");
 
-    cpp_constructor::builder builder(name.c_str());
+    cpp_constructor::builder builder(name.c_str(), detail::convert_access(cur));
     context.comments.match(builder.get(), cur);
     add_parameters(context, builder, cur);
     builder.get().add_attribute(prefix.attributes);
@@ -809,7 +812,7 @@ std::unique_ptr<cpp_entity> detail::parse_cpp_destructor(const detail::parse_con
     DEBUG_ASSERT(!prefix_info.is_constexpr && !prefix_info.is_explicit, detail::assert_handler{});
 
     auto                    name = std::string("~") + stream.get().c_str();
-    cpp_destructor::builder builder(std::move(name));
+    cpp_destructor::builder builder(std::move(name), detail::convert_access(cur));
     context.comments.match(builder.get(), cur);
     builder.get().add_attribute(prefix_info.attributes);
 

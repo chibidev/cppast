@@ -102,6 +102,11 @@ namespace cppast
             return do_get_signature();
         }
 
+        /// \returns The access specifier used in the declaration of this method
+        cpp_access_specifier_kind access_specifier() const {
+            return access_specifier_;
+        }
+
     protected:
         /// Builder class for functions.
         ///
@@ -111,7 +116,7 @@ namespace cppast
         {
         public:
             /// \effects Sets the name.
-            basic_builder(std::string name) : function(new T(name))
+            basic_builder(std::string name, cpp_access_specifier_kind access) : function(new T(name, access))
             {
             }
 
@@ -179,8 +184,9 @@ namespace cppast
             std::unique_ptr<T> function;
         };
 
-        cpp_function_base(std::string name)
-        : cpp_entity(std::move(name)), body_(cpp_function_declaration), variadic_(false)
+        cpp_function_base(std::string name, cpp_access_specifier_kind access)
+        : cpp_entity(std::move(name)), body_(cpp_function_declaration), variadic_(false),
+          access_specifier_(access)
         {
         }
 
@@ -193,6 +199,7 @@ namespace cppast
         std::unique_ptr<cpp_expression>                noexcept_expr_;
         cpp_function_body_kind                         body_;
         bool                                           variadic_;
+        cpp_access_specifier_kind                      access_specifier_;
     };
 
     /// A [cppast::cpp_entity]() modelling a C++ function.
@@ -209,10 +216,10 @@ namespace cppast
         {
         public:
             /// \effects Sets the name and return type.
-            builder(std::string name, std::unique_ptr<cpp_type> return_type)
+            builder(std::string name, std::unique_ptr<cpp_type> return_type, cpp_access_specifier_kind access)
             {
                 function = std::unique_ptr<cpp_function>(
-                    new cpp_function(std::move(name), std::move(return_type)));
+                    new cpp_function(std::move(name), std::move(return_type), access));
             }
 
             /// \effects Sets the storage class.
@@ -251,8 +258,8 @@ namespace cppast
     private:
         cpp_entity_kind do_get_entity_kind() const noexcept override;
 
-        cpp_function(std::string name, std::unique_ptr<cpp_type> ret)
-        : cpp_function_base(std::move(name)),
+        cpp_function(std::string name, std::unique_ptr<cpp_type> ret, cpp_access_specifier_kind access)
+        : cpp_function_base(std::move(name), access),
           return_type_(std::move(ret)),
           storage_(cpp_storage_class_auto),
           constexpr_(false)
